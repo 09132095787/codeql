@@ -115,19 +115,17 @@ func ExtractWithFlags(buildFlags []string, patterns []string) error {
 	log.Println("Done extracting universe scope.")
 
 	// a map of package path to source directory and module root directory
-	pkgInfos := make(map[string]util.PkgInfo)
+	var pkgInfos map[string]util.PkgInfo
 	// root directories of packages that we want to extract
 	wantedRoots := make(map[string]bool)
 
-	if os.Getenv("CODEQL_EXTRACTOR_GO_FAST_PACKAGE_INFO") != "" {
-		log.Printf("Running go list to resolve package and module directories.")
-		// get all packages information
-		pkgInfos, err = util.GetPkgsInfo(patterns, true, modFlags...)
-		if err != nil {
-			log.Fatalf("Error getting dependency package or module directories: %v.", err)
-		}
-		log.Printf("Done running go list deps: resolved %d packages.", len(pkgInfos))
+	log.Printf("Running go list to resolve package and module directories.")
+	// get all packages information
+	pkgInfos, err = util.GetPkgsInfo(patterns, true, modFlags...)
+	if err != nil {
+		log.Fatalf("Error getting dependency package or module directories: %v.", err)
 	}
+	log.Printf("Done running go list deps: resolved %d packages.", len(pkgInfos))
 
 	pkgsNotFound := make([]string, 0, len(pkgs))
 
